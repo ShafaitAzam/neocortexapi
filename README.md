@@ -4,10 +4,10 @@
 # Introduction
 This branch has been created for the purpose of testing and analyzing the parameters of the existing Video Learning Project in the neocortexapi.
 
-Project Name: ML21/22 30.Test and Investigation of Video Learning Project
-Group Name: CodeX
-Group Member 1: Shafait Azam
-Matriculation No: 1345243
++ Project Name: ML21/22 30.Test and Investigation of Video Learning Project
++ Group Name: CodeX
++ Group Member 1: Shafait Azam
++ Matriculation No: 1345243
 
 ## Getting started
 NeoCortexApi is today built as .NET Standard 2.2 library. It contains all artefacts required to run **SpatialPooler**, **TemoralPooler** and few encoders.
