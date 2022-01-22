@@ -1,1 +1,5 @@
+# Investigating the Existing Video Learning Project With NeocortexAPI:
+
+## Introduction:
+The Project "Video Learning With HTM CLA" is built upon the concept of Brain Theory that how a specific portion of our brain which is neocortex can learn multiple sequences of videos and can successfully predict the next frame from a given input frame of a video. The whole project is built on the basis of [NeoCortex Api](https://github.com/ddobric/neocortexapi). It uses Hierarchical Themporal Memory with Cortical Learning Algorithm as a learning mechanism. As we know HTM systems work with the data which is nothing but streams of zeros and ones(Binary Data). So the video is converted into the sequences of bit arrary and then it has been pushed to the HTM model to learn significant patterns from the video. Afterwards, when the model is ready for test phase, an arbitrary image is passed through the network and the model then tries to recreate the video by predicting the proceeding frame from the input frame(arbitrary image).
 
