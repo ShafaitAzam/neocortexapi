@@ -1,0 +1,43 @@
+# Investigating the Existing Video Learning Project With NeocortexAPI:
+
+## Introduction:
+The Project "Video Learning With HTM CLA" is built upon the concept of Brain Theory that how a specific portion of our brain which is neocortex can learn multiple sequences of videos and can successfully predict the next frame from a given input frame of a video. The whole project is built on the basis of [NeoCortex Api](https://github.com/ddobric/neocortexapi). It uses Hierarchical Themporal Memory with Cortical Learning Algorithm as a learning mechanism. As we know HTM systems work with the data which is nothing but streams of zeros and ones(Binary Data). So the video is converted into the sequences of bit arrary and then it has been pushed to the HTM model to learn significant patterns from the video. Afterwards, when the model is ready for test phase, an arbitrary image is passed through the network and the model then tries to recreate the video by predicting the proceeding frame from the input frame(arbitrary image).
+
+## How to Run the Existing Project:
+
+The whole project has been programmed with C# and Microsoft Visual Studio is used as IDE. Two Experiment have been performed in this project which are basically two functions named Run1() and Run2() in the [VideoLearning.cs](https://github.com/ddobric/neocortexapi/blob/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning/HTMVideoLearning/VideoLearning.cs). Though these functions are designed with the same concept of HTM model, they have some discrepancies if we visualize them in terms of how they are being programmed. We can toggle these experiment in the [Program.cs](https://github.com/ddobric/neocortexapi/blob/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning/HTMVideoLearning/Program.cs). Function Run1() and Run2() has individual training, learning+predicting and testing phases. The following steps should be carried out to successfully build and run the project.
+1. Run the main program [Program.cs](https://github.com/ddobric/neocortexapi/blob/SequenceLearning_ToanTruong/Project12_HTMCLAVideoLearning/HTMVideoLearning/HTMVideoLearning/Program.cs) by selecting only one function at a time (either Run1() or Run2()).
+2. Then open the Command Prompt and put the directory of the executable file (HTMVideoLearning.exe) in the cmd. Run the executable file in the command prompt. Then the program will ask to insert or drag the folder in the cmd that contains the training files(HTMVideoLearning\VideoLibrary\SmallTrainingSet). After that the HTM Model will start running and start printing relevant information in the Command Prompt.
+3. The similar process must be followed if we want to run the project with experiment 2 (Run2()).
+
+## Current HTM Configuration Checked:
+
+The following code segment depicts the configuration of the Hierarchical Themporal Memory Model that have been designed to learn video. Run1() and Run2() uses same configuration. I have tested some combination of these parameters especially the PermanenceDecrement and the PermanenceIncrement parameter. It takes significantly long time to train the model with the given input set(HTMVideoLearning\VideoLibrary\SmallTrainingSet). As these two parameters are responsible for manupulating the overlap connections in the SP column, these parameters changes the accuracy of the model. I have also analyzed the [SequenceLearningExperiment]https://github.com/ddobric/neocortexapi/blob/master/source/SequenceLearningExperiment/Program.cs and compare it with our project. Though we are learning videos, I found that above two parameters are essential when we want to learn sequences of numbers. Punishing of segments has not been initialized here to drop the connection of SP given a particular input space.
+The following code segment depicts the configuration of the Hierarchical Themporal Memory Model that have been designed to learn video. Run1() and Run2() uses same configuration. I have tested some combination of these parameters especially the PermanenceDecrement and the PermanenceIncrement parameter. It takes significantly long time to train the model with the given input set(HTMVideoLearning\VideoLibrary\SmallTrainingSet). As these two parameters are responsible for manupulating the overlap connections in the SP column, these parameters changes the accuracy of the model. I have also analyzed the SequenceLearningExperiment [Program.cs]https://github.com/ddobric/neocortexapi/blob/master/source/SequenceLearningExperiment/Program.cs and compare it with our project. Though we are learning videos, I found that above two parameters are essential when we want to learn sequences of numbers. Punishing of segments has not been initialized here to drop the connection of SP given a particular input space.
+
+```csharp
+private static HtmConfig GetHTM(int[] inputBits, int[] numColumns)
+{
+    HtmConfig htm = new(inputBits, numColumns)
+    {
+        Random = new ThreadSafeRandom(42),
+        CellsPerColumn = 30,
+        GlobalInhibition = true,
+        //LocalAreaDensity = -1,
+        NumActiveColumnsPerInhArea = 0.02 * numColumns[0],
+        PotentialRadius = (int)(0.15 * inputBits[0]),
+        //InhibitionRadius = 15,
+        MaxBoost = 10.0,
+        //DutyCyclePeriod = 25,
+        //MinPctOverlapDutyCycles = 0.75,
+        MaxSynapsesPerSegment = (int)(0.02 * numColumns[0]),
+        //ActivationThreshold = 15,
+        //ConnectedPermanence = 0.5,
+        // Learning is slower than forgetting in this case.
+        //PermanenceDecrement = 0.15,
+        //PermanenceIncrement = 0.15,
+        // Used by punishing of segments.
+    };
+    return htm;
+}
+```
