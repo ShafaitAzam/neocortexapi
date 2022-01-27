@@ -42,6 +42,7 @@ namespace HTMVideoLearning
             }
             int frameWidth = 18;
             int frameHeight = 18;
+            //choose Blackwhite
             ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 12;
             // adding condition for 
