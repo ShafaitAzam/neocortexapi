@@ -19,6 +19,7 @@ namespace HTMVideoLearning
             Stopwatch sw = new();
             List<TimeSpan> RecordedTime = new();
 
+
             HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Noath2302");
             HelperFunction.WriteLineColor("Please insert or drag the folder that contains the training files: ", ConsoleColor.Blue);
             string trainingFolderPath = Console.ReadLine();
@@ -40,8 +41,8 @@ namespace HTMVideoLearning
             {
                 Directory.CreateDirectory(testOutputFolder);
             }
-            int frameWidth = 18;
-            int frameHeight = 18;
+            int frameWidth = 20;
+            int frameHeight = 20;
             //choose Blackwhite
             ColorMode colorMode = ColorMode.BLACKWHITE;
             double frameRate = 12;
@@ -83,7 +84,7 @@ namespace HTMVideoLearning
 
             int maxNumOfElementsInSequence = videoData[0].GetLongestFramesCountInSet();
 
-            int maxCycles = 10;
+            int maxCycles = 20;
             int newbornCycle = 0;
 
             HomeostaticPlasticityController hpa = new(mem, maxNumOfElementsInSequence * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
@@ -434,17 +435,22 @@ namespace HTMVideoLearning
 
 
 
+
+
         // Running second experiment on the VL Project
         public static void Run2()
         {
             Stopwatch sw = new();
+            System.IO.StreamWriter file = new System.IO.StreamWriter("C:\\Users\\user\\Desktop\\FULL Neocortex\\testresultprint\\testPrint.txt");
             List<TimeSpan> RecordedTime = new();
 
             HelperFunction.WriteLineColor($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Toan Truong");
+            file.WriteLine($"Hello NeoCortexApi! Conducting experiment {nameof(VideoLearning)} Toan Truong");
 
             // The current training Folder is located in HTMVideoLlearning/
             // SmallTrainingSet ; Training Videos ; oneVideoTrainingSet
             HelperFunction.WriteLineColor("Please drag the folder that contains the training files to the Console Window: ", ConsoleColor.Blue);
+            file.WriteLine("Please drag the folder that contains the training files to the Console Window: ");
             string trainingFolderPath = Console.ReadLine();
 
             // Starting experiment
@@ -507,12 +513,18 @@ namespace HTMVideoLearning
             HomeostaticPlasticityController hpa = new(mem, 30 * 150 * 3, (isStable, numPatterns, actColAvg, seenInputs) =>
               {
                   if (isStable)
-                      // Event should be fired when entering the stable state.
+                  {
+                    // Event should be fired when entering the stable state.
                       Console.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-                  else
+                      file.WriteLine($"STABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+
+                  }
+
+                  else { 
                       // Ideal SP should never enter unstable state after stable state.
                       Console.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
-
+                      file.WriteLine($"INSTABLE: Patterns: {numPatterns}, Inputs: {seenInputs}, iteration: {seenInputs / numPatterns}");
+                       }
                   // We are not learning in instable state.
                   learn = isInStableState = isStable;
 
@@ -535,14 +547,18 @@ namespace HTMVideoLearning
             {
                 newbornCycle++;
                 Console.WriteLine($"-------------- Newborn Cycle {newbornCycle} ---------------");
+               file.WriteLine($"-------------- Newborn Cycle {newbornCycle} ---------------");
+
                 foreach (VideoSet set in videoData)
                 {
                     // Show Set Label/ Folder Name of each video set
                     HelperFunction.WriteLineColor($"VIDEO SET LABEL: {set.VideoSetLabel}", ConsoleColor.Cyan);
+                    file.WriteLine($"VIDEO SET LABEL: {set.VideoSetLabel}");
                     foreach (NVideo vid in set.nVideoList)
                     {
                         // Name of the Video That is being trained 
                         HelperFunction.WriteLineColor($"    VIDEO NAME: {vid.name}", ConsoleColor.DarkCyan);
+                        file.WriteLine($"VIDEO SET LABEL: {set.VideoSetLabel}");
                         foreach (NFrame frame in vid.nFrames)
                         {
                             //Console.WriteLine($" -- {frame.FrameKey} --");
@@ -591,13 +607,17 @@ namespace HTMVideoLearning
                         cycle++;
 
                         Console.WriteLine($"-------------- Cycle {cycle} ---------------");
+                        file.WriteLine($"-------------- Cycle {cycle} ---------------");
+
 
                         foreach (var currentFrame in nv.nFrames)
                         {
                             Console.WriteLine($"-------------- {currentFrame.FrameKey} ---------------");
+                            file.WriteLine($"-------------- {currentFrame.FrameKey} ---------------");
                             var lyrOut = layer1.Compute(currentFrame.EncodedBitArray, learn) as ComputeCycle;
 
                             Console.WriteLine(string.Join(',', lyrOut.ActivColumnIndicies));
+                            file.WriteLine(string.Join(',', lyrOut.ActivColumnIndicies));
                             // lyrOut is null when the TM is added to the layer inside of HPC callback by entering of the stable state.
 
                             previousInputs.Add(currentFrame.FrameKey);
@@ -616,7 +636,9 @@ namespace HTMVideoLearning
                             List<Cell> actCells;
 
                             HelperFunction.WriteLineColor($"WinnerCell Count: {lyrOut.WinnerCells.Count}", ConsoleColor.Cyan);
+                            file.WriteLine($"WinnerCell Count: {lyrOut.WinnerCells.Count}");
                             HelperFunction.WriteLineColor($"ActiveCell Count: {lyrOut.ActiveCells.Count}", ConsoleColor.Cyan);
+                            file.WriteLine($"ActiveCell Count: {lyrOut.ActiveCells.Count}");
 
                             if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
                             {
@@ -629,23 +651,29 @@ namespace HTMVideoLearning
 
                             // Remember the key with corresponding SDR
                             HelperFunction.WriteLineColor($"Current learning Key: {key}", ConsoleColor.Magenta);
+                            file.WriteLine($"Current learning Key: {key}");
                             cls.Learn(key, actCells.ToArray());
 
-                            if (learn == false)
+                            if (learn == false) { 
                                 Console.WriteLine($"Inference mode");
-
+                                file.WriteLine($"Inference mode");
+                                }
                             Console.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                            file.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                             Console.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+                            file.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
                             if (lastPredictedValue.Contains(key))
                             {
                                 matches++;
                                 Console.WriteLine($"Match. Actual value: {key} - Predicted value: {key}");
+                                file.WriteLine($"Match. Actual value: {key} - Predicted value: {key}");
                                 lastPredictedValue.Clear();
                             }
                             else
                             {
                                 Console.WriteLine($"Mismatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValue)}");
+                                file.WriteLine($"Mismatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValue)}");
                                 lastPredictedValue.Clear();
                             }
 
@@ -657,12 +685,14 @@ namespace HTMVideoLearning
                                 foreach (var item in predictedInputValues)
                                 {
                                     Console.WriteLine($"Current Input: {currentFrame.FrameKey} \t| Predicted Input: {item.PredictedInput}");
+                                    file.WriteLine($"Current Input: {currentFrame.FrameKey} \t| Predicted Input: {item.PredictedInput}");
                                     lastPredictedValue.Add(item.PredictedInput);
                                 }
                             }
                             else
                             {
                                 Console.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                                file.WriteLine($"NO CELLS PREDICTED for next cycle.");
                                 lastPredictedValue.Clear();
                             }
                         }
@@ -673,6 +703,7 @@ namespace HTMVideoLearning
                         //accuracy = (double)matches / (double)nv.nFrames.Count * 100.0; // Use if without reset
 
                         Console.WriteLine($"Cycle: {cycle}\tMatches={matches} of {nv.nFrames.Count}\t {accuracy}%");
+                        file.WriteLine($"Cycle: {cycle}\tMatches={matches} of {nv.nFrames.Count}\t {accuracy}%");
                         if (accuracy == lastCycleAccuracy)
                         {
                             // The learning may result in saturated accuracy
@@ -703,6 +734,7 @@ namespace HTMVideoLearning
                     }
 
                     Console.WriteLine("------------ END ------------");
+                    file.WriteLine("------------ END ------------");
                     previousInputs.Clear();
                 }
             }
@@ -714,6 +746,7 @@ namespace HTMVideoLearning
                 Directory.CreateDirectory(testOutputFolder);
             }
             HelperFunction.WriteLineColor("Drag an image as input to recall the learned Video: ");
+            file.WriteLine("Drag an image as input to recall the learned Video: ");
             userInput = Console.ReadLine().Replace("\"", "");
 
             int testNo = 0;
@@ -738,10 +771,13 @@ namespace HTMVideoLearning
 
                 foreach (var serie in predictedInputValue)
                 {
-                    HelperFunction.WriteLineColor($"Predicted Serie:", ConsoleColor.Green);
+                    HelperFunction.WriteLineColor($"Predicted Series:", ConsoleColor.Green);
+                    file.WriteLine($"Predicted Series:");
                     string s = serie.PredictedInput;
                     HelperFunction.WriteLineColor(s);
+                     file.WriteLine(s);
                     Console.WriteLine("\n");
+                    file.WriteLine("\n");
                     //Create List of NFrame to write to Video
                     List<NFrame> outputNFrameList = new();
                     string Label = "";
